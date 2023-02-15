@@ -1,39 +1,36 @@
-import './App.css';
-import React, { useState } from 'react';
+import '../App.css';
+import React, { useState, useEffect } from 'react';
 import Container          from 'react-bootstrap/Container';
 import Row                from 'react-bootstrap/Row';
 import Col                from 'react-bootstrap/Col';
 import Card               from 'react-bootstrap/Card';
-import Button             from 'react-bootstrap/Button';
-
 
 function NewsFeed() {
    // State
    const [apiNData, setNApiData] = useState({});
-   
+   const [error, setError] = useState(null);
+  
    // API
-   const apiNKey = process.env.REACT_APP_NF_API_KEY;
    const apiNUrl = 'https://news-api14.p.rapidapi.com/top-headlines?country=us&language=en&pageSize=10&category=technology';
 
-   
-   const options = {
-    method: 'GET',
-    headers: {
-      'X-RapidAPI-Key': apiNKey,
-      'X-RapidAPI-Host': 'news-api14.p.rapidapi.com'
-    }
-  };
-  
-  const submitHandler = () => {
-    console.log("Fetching");
-    fetch(apiNUrl, options)
-    .then(response => response.json())
-	  .then((data) => {
-      console.log('Success:', data);
-      setNApiData(data);
-    })
-	  .catch(err => console.error(err))};
-
+  useEffect(() => {
+      const options = {
+        method: 'GET',
+        headers: {
+        'X-RapidAPI-Key': process.env.REACT_APP_NF_API_KEY,
+        'X-RapidAPI-Host': 'news-api14.p.rapidapi.com'
+      }};
+      const fetchData = async () => {
+        try {
+          fetch(apiNUrl, options)
+          .then((res) => res.json())
+          .then((data) => setNApiData(data));
+        } catch (err) {
+          setError(err);
+        } 
+      };
+      fetchData();
+    }, []);
 
   return (
     <Container fluid>
@@ -43,23 +40,22 @@ function NewsFeed() {
         <Card.Body>
           <Row>
             <Col>
-              <h3><Button className="btn btn-primary" onClick={submitHandler}>Get News</Button></h3>
+              {error && <p>Error: {error.message}</p>}
             </Col>
           </Row>
           <Row>
             <Col>
-              
               {apiNData.articles? (
                 <Container>
-                {apiNData.articles.map(article => (  
-                  <>
+                {apiNData.articles.map((article, index)=>(  
+                  <div key={index}>
                   <Card>
                     <Card.Header>{article.published_date}</Card.Header>
                     <Card.Body>{article.title}</Card.Body>
                     <Card.Footer><a href={article.url} target="_blank" rel="noreferrer">{article.url}</a></Card.Footer>
                   </Card>
                   <br />
-                  </>
+                  </div>
                 ))}
                 </Container>
             ) : (<h3>No News Loaded</h3>) 

@@ -1,4 +1,11 @@
 
+@media screen and not (min-width: 900px) {
+  h3 {
+      color: blue;
+      background-color: lightgoldenrodyellow;
+  }
+}
+
 .headerimg {
   max-height: 100px;
 } 

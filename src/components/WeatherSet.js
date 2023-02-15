@@ -1,4 +1,4 @@
-import './App.css';
+import '../App.css';
 import React, { useState, useEffect } from 'react';
 import Container          from 'react-bootstrap/Container';
 import Row                from 'react-bootstrap/Row';
@@ -15,7 +15,8 @@ function WeatherSet() {
   const [apiWData, setApiWData] = useState({});
   const [getState, setGetState] = useState('Toronto, Ontario, Canada');
   const [state, setState] = useState('Toronto, Ontario, Canada');
-  
+  const [error, setError] = useState(null);
+
   // API
   const apiWKey = process.env.REACT_APP_WS_API_KEY;
   const apiWUrl = `https://api.openweathermap.org/data/2.5/weather?q=${state}&appid=${apiWKey}`;
@@ -25,7 +26,17 @@ function WeatherSet() {
     fetch(apiWUrl)
       .then((res) => res.json())
       .then((data) => setApiWData(data));
-  }, [apiWUrl]);
+      const fetchData = async () => {
+        try {
+          fetch(apiWUrl)
+          .then((res) => res.json())
+          .then((data) => setApiWData(data));
+        } catch (err) {
+          setError(err);
+        } 
+      };
+    fetchData();}, [apiWUrl]
+  );
 
   const inputHandler = (event) => {
     setGetState(event.target.value);
@@ -47,12 +58,16 @@ function WeatherSet() {
         <Card.Body>
           <Row>
             <Col>
+              {error && <p>Error: {error.message}</p>}
+            </Col>
+          </Row>
+          <Row>
+            <Col>
               <InputGroup className="mb-3">
                 <Form.Control
                   placeholder="City Name"
                   aria-label="City Name"
                   aria-describedby="basic-addon2" 
-                  ControlId="location-name" 
                   onChange={inputHandler} 
                   value={getState} />
                 <Button className="btn btn-primary" onClick={submitHandler}>Search</Button>
@@ -67,10 +82,10 @@ function WeatherSet() {
                 <Image src={`http://openweathermap.org/img/w/${apiWData.weather[0].icon}.png`}
                 alt="weather status icon"
                 className="weather-icon" /></h1>
-                <h2>{kelvinToFarenheit(apiWData.main.temp)}&deg; C</h2>
+                <h3>{kelvinToFarenheit(apiWData.main.temp)}&deg; C</h3>
               </Container>
             ) : (
-              <h1>Please Wait - Loading.</h1>
+              <h3>Please Wait - Loading.</h3>
             )}
             </Col>
           </Row>
