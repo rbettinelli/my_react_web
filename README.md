@@ -4,14 +4,12 @@
 This project is for Georgain College Web Dev Course - Assignement #2. 
 Due Feb 22, 2023
 
-## Getting Started with Create React App
-
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
 
 In the project directory, you can run:
 
+### `npm install`
 ### `npm start`
 
 Runs the app in the development mode.\
